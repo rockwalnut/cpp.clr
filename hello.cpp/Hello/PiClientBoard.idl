@@ -1,0 +1,157 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  $Workfile:$
+//
+//  Description:.
+//        Defines the Plug-in side of the Benchmark/Plug-in *Board* interface
+//
+//    $Author:$
+//  $Revision:$
+//      $Date:$
+//
+//  Copyright 2011 Speedline Technologies, Inc.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+import "PiDefine.idl";
+
+/*!
+    An RPC interface to allow Benchmark to notify a Plug-in of board related events. 
+    If a Plug-in wishes to receive board notifications from Benchmark it must implement this interface and set ePINotifyTypeBoard in PICliConnectIF::RpcPIGetNotificationList.
+*/
+[
+uuid(425b3eaa-78b6-4329-9d42-2a25f018bb3c),
+version(1.0)
+]
+interface PICliBoardInterface
+{
+    /*!
+    \b Schema1 Board has entered into the processing segment of the machine, processing has started on identified board.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param lBoardId The board identifier
+    */
+    void RpcPIBoardProcgStarted
+    ( 
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] long lBoardId
+    );
+
+    /*!
+     \b Schema1 Processing has completed on identified board. 
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param lBoardId Board identifier
+    \param lBoardCount Board count of processed boards including this board
+    */
+    void RpcPIBoardProcgCompleted
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] long lBoardId,
+        [in] long lBoardCount
+    );
+
+    /*!
+    \b Schema1 The identified board has been printed. 
+    */
+    void RpcPIBoardPrinted
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                       /*!< The context handle for the plug-in. */      
+        [in] hyper i64Timestamp,                                /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in] long lBoardId,                                     /*!< Board identifier */
+        [in] short sBarcodeLen,                                 /*!< Number of characters (excluding NUL) in usBarcode */
+        [in, size_is(sBarcodeLen)] unsigned short usBarcode[*], /*!< NUL terminated string containing the barcode. If no barcode then an empty string. */
+        [in] boolean bInitStrokeF2R,                            /*!< True if first print stroke was front to rear. */
+        [in] short sNumStrokes,                                 /*!<  Number of print strokes performed on board. */
+        [in] EPIProcessedStatus eProcessedStatus,               /*!< Indicates whether or not the board was printed successfully. */
+        [in] long lPackagedDataLength,                          /*!< Number of bytes in packagedData */
+        [in, size_is(lPackagedDataLength)] byte packagedData[*] /*!< A block of data associated with the board.  Some Plug-in interface calls will 
+                                                                require and exact copy of this data to be passed in. Plug-ins that make those calls must hold onto
+                                                                this data and maintain its relationship to lBoardId.*/
+        
+    );
+
+    /*!
+    \b Schema1 Indicates that a board which failed inspection has been accepted by the operator.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param lBoardId The board identifier.
+    */
+    void RpcPIBoardAccepted
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] long lBoardId
+    );
+
+    /*!
+    \b Schema1 Indicates that a board which failed inspection or was kneaded has been rejected by the operator.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param lBoardId The board identifier.
+    */
+    void RpcPIBoardRejected
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] long lBoardId
+    );
+
+    /*!
+    \b Schema1 Outputs the panel data.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param lBoardId The board identifier.
+    \param sNumPanels The number of panels on the board.
+    \param sPanelIdList The array of panel ids.
+    \param usBarcodeList The array of panel barcodes arranged in the same order as sPanelIdList.
+    */
+    void RpcPIPostPanelData
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] long lBoardId,
+        [in] short sNumPanels,
+        [in,size_is(sNumPanels)] short sPanelIdList[*],
+        [in,size_is(sNumPanels)] unsigned short usBarcodeList[*][BENCHMARK_PII_MAX_BARCODE_LEN]
+    );
+
+    /*!
+    \b Schema1 Informs plug-ins that any data pertaining to boards already processed by 
+    Benchmark should be considered invalid and no longer be used.  Called in certain reset situations.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    */
+    void RpcPIClearQueue
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp
+    );
+
+	/*!
+    \b Schema5 Outputs the paste-height-monitor data.
+    */
+	void RpcPIPostPasteHeightData
+	(
+        [in] PCONTEXT_HDL_TYPE phContext,	/*!< The context handle for the plug-in. */      
+        [in] hyper i64Timestamp,			/*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in] long lBoardId,					/*!< The board identifier. */
+        [in] double dPasteHeightMinMm,		/*!< The current threshold. */
+        [in] double dPasteHeightMeasuredMm	/*!< The measured value (based on multiple samples). */
+	);
+
+	/*!
+    \b Schema6 Outputs the barcode scanned at various sources.
+    */
+	void RpcPIBoardBarcodeNotification
+	(
+        [in] PCONTEXT_HDL_TYPE phContext,						/*!< The context handle for the plug-in. */      
+        [in] hyper i64Timestamp,								/*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in] EPIBarcodeSource eBarcodeSource,					/*!< Enum defining the barcode source (See definition of \ref EPIBarcodeSource). */
+		[in] short sBarcodeLen,									/*!< Number of characters (excluding NUL) in usBarcode */
+        [in, size_is(sBarcodeLen)] unsigned short usBarcode[*]	/*!< NUL terminated string containing the barcode. If no barcode then an empty string. */
+	);
+
+}

@@ -1,0 +1,398 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  $Workfile:$
+//
+//  Description:.
+//        Type definitions, enumerations, etc. for the Benchmark Plug-in Interface
+//
+//    $Author:$
+//  $Revision:$
+//      $Date:$
+//
+//  Copyright 2011 Speedline Technologies, Inc.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+/*! \file PIDef.idl
+    Definitions used throughout the Benchmark Plug-in interface.
+*/
+
+/*! A context handle for use in all calls into the Benchmark interface that can potentially affect machine state.*/ 
+typedef [context_handle] void*      PCONTEXT_HDL_TYPE;
+
+/*! The version of the overall Plug-in interface schema.*/ 
+const long                  BENCHMARK_PII_SCHEMA_VERSION        =   6;
+
+/*! The maximum length of a barcode string.*/ 
+const long                  BENCHMARK_PII_MAX_BARCODE_LEN       =   100;
+
+/*! The maximum length of any process program, fiducial, profile, etc.*/ 
+const long                  BENCHMARK_PII_MAX_OBJ_NAME_LEN      =   64;
+
+/*! The character length of a Benchmark Open App GUID*/ 
+const long                  BENCHMARK_PII_GUID_LEN              =   39;
+
+/*! The maximum length of any published value names*/ 
+const long                  BENCHMARK_PII_MAX_VALUE_NAME_LEN    =   256;
+
+/*! Indicates the status of calls into the Benchmark Plug-in Interface*/ 
+typedef enum
+{ 
+    ePICallStatAOK,                             /*!< Call succeeded */ 
+    ePICallStatNotAuthorized,                   /*!< The caller is not authorized to perform the requested action. */ 
+    ePICallStatNotLicensed,                     /*!< The caller is not licensed. */ 
+    ePICallStatAlreadyConnected,                /*!< Returned when RpcBMConnect is called and a plug in has already connected with that key. */ 
+    ePICallStatInternalError,                   /*!< Benchmark experienced an internal error while performing the action. */ 
+    ePICallStatIncorrectState,                  /*!< The state of the machine is such that the action may not be performed. */ 
+    ePICallStatInvalidContext,                  /*!< The context handle provided was not valid. */ 
+    ePICallStatInvalidParameter,                /*!< An invalid parameter was passed in the RPC call */ 
+    ePICallStatIncorrectHardware,               /*!< The call is not appropriate for the current hardware configuration */ 
+    ePICallStatProcessProgramNotFound,          /*!< The requested process program could not be found. */ 
+    ePICallStatValueNotFound,                   /*!< The requested published value could not be found. */ 
+    ePICallStatLast                             /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */ 
+} EPICallStatus;
+
+/*! Indicates the type of Benchmark machine */ 
+typedef enum 
+{ 
+    ePIMachineTypeAccela, 
+    ePIMachineTypeMomentum, 
+    ePIMachineTypeMomentumDualLane,
+	ePIMachineTypeEdison,
+    ePIMachineTypeLast                          /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */ 
+} EPIMachineType;
+
+/*! Each enum value represents a subset of the notifications that Benchmark may provide. */ 
+typedef enum 
+{
+    ePINotifyTypeConfiguration, 
+    ePINotifyTypeLogin, 
+    ePINotifyTypeOperatorValidation, 
+    ePINotifyTypeAlarm, 
+    ePINotifyTypeState, 
+    ePINotifyTypeConveyor, 
+    ePINotifyTypeBoard, 
+    ePINotifyTypeProcessProgram, 
+    ePINotifyTypeAlignment, 
+    ePINotifyTypeInspection, 
+    ePINotifyTypeEnvironmental, 
+    ePINotifyTypeTraceability,
+	ePINotifyTypeMessage,
+	ePINotifyTypeValues,
+    ePINotifyTypeLast                           /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */ 
+} EPINotifyType;
+
+/*! Indicates the status of calls into Benchmark */ 
+typedef enum
+{ 
+    ePIAlarmTypeMachineStatus,
+    ePIAlarmTypeSystemComm,
+    ePIAlarmTypeAxisMove,
+    ePIAlarmTypeAxisHome,
+    ePIAlarmTypeProcessProgram,
+    ePIAlarmTypeDatabase,
+    ePIAlarmTypeMaterial,
+    ePIAlarmTypeBoardTransport,
+    ePIAlarmTypePrintProcedure,
+    ePIAlarmTypeAlignment,
+    ePIAlarmTypeInspection,
+    ePIAlarmTypeMotionController,
+    ePIAlarmTypeIOSensor,
+    ePIAlarmTypeCalibration,
+    ePIAlarmTypeTandemMode,
+    ePIAlarmTypePlugin,
+    ePIAlarmTypeEnvironmental,
+    ePIAlarmTypeLast,                           /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */ 
+} EPIAlarmType;
+
+/*! Indicates the status of calls into Benchmark */ 
+typedef enum
+{ 
+    ePIAlarmSubTypeAny = -1,                 
+    ePIAlarmSubTypeNone,
+    ePIAlarmSubTypeCtlrMoveTimeout,                     /*!< Timeout received before move complete */
+    ePIAlarmSubTypeCtlrMotorStatusError,                /*!< Error detected at CT Controller level */
+    ePIAlarmSubTypeWiperPaperOut,                       /*!< Wiper paper is out */ 
+    ePIAlarmSubTypeBladesNotLeveled,                    /*!< Blades aren't leveled */
+    ePIAlarmSubTypeStencilNotClamped,                   /*!< Stencil not clamped */
+    ePIAlarmSubTypePasteOut,                            /*!< Out Of Paste */
+    ePIAlarmSubTypePasteOutWhileCharging,       
+    ePIAlarmSubTypePreviewFailure,                      /*!< Preview failed on one or more devices. */
+    ePIAlarmSubTypeBoardInspectFailure,                 /*!< Inspection of the board detected failure */
+    ePIAlarmSubTypeStencilInspectFailure,               /*!< Inspection of the stencil detected */
+    ePIAlarmSubTypeConveyorNormalLeft,                  /*!< Error transporting a board */       
+    ePIAlarmSubTypeConveyorNormalCenter,                /*!< Error transporting a board */     
+    ePIAlarmSubTypeConveyorNormalCenterSingle,          /*!< Error transporting a board */
+    ePIAlarmSubTypeConveyorNormalRight,                 /*!< Error transporting a board */
+    ePIAlarmSubTypeConveyorNormalLeftCenter,            /*!< Error transporting a board */
+    ePIAlarmSubTypeConveyorNormalRightCenter,           /*!< Error transporting a board */
+    ePIAlarmSubTypeConveyorProcSegLRSensorSingleTrk,    /*!< Transport error on the process segment */
+    ePIAlarmSubTypeConveyorProcSegLSensorSingleTrk,     /*!< Transport error on the process segment */
+    ePIAlarmSubTypeConveyorProcSegRSensorSingleTrk,     /*!< Transport error on the process segment */
+    ePIAlarmSubTypeConveyorProcSegLRSensorTripleTrk,    /*!< Transport error on the process segment */
+    ePIAlarmSubTypeConveyorProcSegLSensorTripleTrk,     /*!< Transport error on the process segment */
+    ePIAlarmSubTypeConveyorProcSegRSensorTripleTrk,     /*!< Transport error on the process segment */
+    ePIAlarmSubTypePromptManualAddPaste,                /*!< Prompt to add paste manually during production. */
+    ePIAlarmSubTypeTrainPasteError,                     /*!< Train paste error */
+    ePIAlarmSubTypePumpChargeTimeoutError,              /*!< Pump charge timeout error */
+    ePIAlarmSubTypeManualTrainPaste,                    /*!< Manual train paste */
+    ePIAlarmSubTypeFidNotFoundDuringProd,               /*!< Fiducial not found during production */
+    ePIAlarmSubTypeStencilFidNotFoundDuringProd,     
+    ePIAlarmSubTypeStretchErrDuringProd,                /*!< Stretch error during production */
+    ePIAlarmSubTypeWiperMoveToPosTimeout,               /*!< Wiper move to position timeout during a wipe. */
+    ePIAlarmSubTypePasteLow,                            /*!< Paste Low */
+    ePIAlarmSubTypeWiperSolventLow,                     /*!< Wiper Solvent is low */
+    ePIAlarmSubTypeMissingBarcodeExternal,              /*!< Barcode not read by external barcode scanner */
+    ePIAlarmSubTypeMissingBarcodeInternal,              /*!< Barcode not read by internal barcode scanner */
+    ePIAlarmSubTypeLess2FidsFoundDuringProd,            /*!< Less than 2 fids found during production */
+    ePIAlarmSubTypeDidNotConvergeDuringProd,            /*!< Alignment failed to converge during production */
+    ePIAlarmSubTypePanelBarcodeScanError,
+    ePIAlarmSubTypeCameraStrobeTimeout,
+    ePIAlarmSubTypeBoardVerifyErrorExternal,
+    ePIAlarmSubTypeBoardVerifyErrorInternal,
+    ePIAlarmSubTypePrintLimitReached,
+    ePIAlarmSubTypeOpenLoopHeadMfgCalNotDone,
+    ePIAlarmSubTypeClosedLoopHeadMfgCalNotDone,
+    ePIAlarmSubTypeToolingPinsOnTable,
+    ePIAlarmSubTypeToolingAutoPlacePins,
+    ePIAlarmSubTypeToolingAutoRemovePins,
+    ePIAlarmSubTypeToolingCarouselEmpty,
+    ePIAlarmSubTypeToolingCarouselFull,
+    ePIAlarmSubTypeToolingDataFileReadErr,
+    ePIAlarmSubTypeToolingPinPickupLowerErr,
+    ePIAlarmSubTypeTrackResizeErrorToolingDetected,
+    ePIAlarmSubTypeBoardZHeightOutOfRange,
+    ePIAlarmSubTypeTrackResizeErrToolingPinsDetected,
+    ePIAlarmSubTypeBSXChangedWithToolingDownErr,
+    ePIAlarmSubTypeHandScanPasteBarcodeMatchError,
+    ePIAlarmSubTypePromptManualStencilClean,
+    ePIAlarmSubTypePromptRemoveAndCleanStencil,
+    ePIAlarmSubTypePassiveLaneTransportError,
+    ePIAlarmSubTypeTriggerManualInspect,                /*!< Manual inspection event triggered */            
+    ePIAlarmSubTypeGridToolingNotLocked,
+    ePIAlarmSubTypeTrainStencilError,          
+    ePIAlarmSubTypeBDMaterialLow,                    
+    ePIAlarmSubTypePumpFillTimeout,                    // added in 4.3.1                          
+    ePIAlarmSubTypeChamberOverpressure,              
+    ePIAlarmSubTypeRequiredAppNotConnected,          
+    ePIAlarmSubTypeTemperatureOutOfRangeErr,         
+    ePIAlarmSubTypeTemperatureOutOfRangeWarn,        
+    ePIAlarmSubTypeHumidityOutOfRangeErr,            
+    ePIAlarmSubTypeHumidityOutOfRangeWarn,           
+    ePIAlarmSubTypeLast                                 /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPIAlarmSubType;
+
+/*! Specifies the severity level of alarms.  ePIAlarmSeverityOperator is the most severe and ePIAlarmSeverityWarning is the least */ 
+typedef enum
+{ 
+    ePIAlarmSeverityOperator,                   /*!< Potential danger to operator */
+    ePIAlarmSeverityEquipment,                  /*!< Potential danger to equipment */
+    ePIAlarmSeverityMaterial,                   /*!< Potential danger to material being processed */
+    ePIAlarmSeverityWarning,                    /*!< Warning alarm */
+    ePIAlarmSeverityLast                        /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPIAlarmSeverity;
+    
+/*! Specifies whether or not the alarm has been triggered or cleared. */ 
+typedef enum
+{ 
+    ePIAlarmActionTriggered,                    /*!< A new instance of the alarm condition has occurred. */
+    ePIAlarmActionCleared,                      /*!< The alarm inistance has been cleared. */
+    ePIAlarmActionLast                          /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPIAlarmAction;
+
+/*! Specifies the overall alarm state of the system. */ 
+typedef enum
+{ 
+    ePIAlarmSysStateClear,                      /*!< No triggered alarms */
+    ePIAlarmSysStateErrUnackd,                  /*!< 1+ error alarms exist AND 1+ unack'd alarms exists */
+    ePIAlarmSysStateError,                      /*!< 1+ error alarms exist - ALL alarms have been ack'd */
+    ePIAlarmSysStateWarngUnackd,                /*!< 1+ warning alarms exist with at least 1 of them unack'd */
+    ePIAlarmSysStateWarning,                    /*!< 1+ warning alarms exist and all have been ack'd */
+    ePIAlarmSysStateLast                        /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPIAlarmSysState;
+
+/*! Specifies the available machine state events. */ 
+typedef enum
+{ 
+    ePISysMSUninitialized,                      /*!< Waiting for INIT command */
+    ePISysMSInitializing,                       /*!< Initializing the hardware */
+    ePISysMSWtgConvEmpty,                       /*!< Waiting for conveyor to be (manually) emptied */
+    ePISysMSWtgConvLoad,                        /*!< Waiting for conveyor to be (manually) loaded */
+    ePISysMSInitFailed,                         /*!< Failed to initialize */
+    ePISysMSUnlocked,                           /*!< Hoods are unlocked */
+    ePISysMSNotReady,                           /*!< Initialized but not ready to run */
+    ePISysMSReady,                              /*!< Ready to run (including PP selected) */
+    ePISysMSProcessing,                         /*!< Running previously selected PP */
+    ePISysMSSetup,                              /*!< Performing a setup operation (e.g. teaching fids) */
+    ePISysMSPaused,                             /*!< Processing paused */
+    ePISysMSPausedOnWaferVacError,              /*!< Paused on wafer chuck vacuum error */
+    ePISysMSPausedWaitingPaste,                 /*!< Paused waiting for user to add paste */
+    ePISysMSPausedWtgDispRefill,                /*!< Paused waiting for dispenser to be refilled */
+    ePISysMSPausedWtgWiperRefill,               /*!< Paused waiting for wiper paper and/or solvent */
+    ePISysMSWtgBoardForKnead,                   /*!< Waiting for board available (before knead) */
+    ePISysMSWtgKneadOption,                     /*!< Waiting for user to specify knead option */
+    ePISysMSPausedWithError,                    /*!< Paused with error (reported via alarm) */
+    ePISysMSLast                                /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPISysMachineState;
+
+/*! Specifies the available process program events. */ 
+typedef enum
+{ 
+    ePIProcPrgmActionSelected,                  /*!< A process program was loaded by Benchmark. */   
+    ePIProcPrgmActionUnselected,                /*!< A current process program has been unloaded by Benchmark. */
+    ePIProcPrgmActionModified,                  /*!< The current process program had been modified by Benchmark.  This will be accompanied by separate messages for each param that has been changed. */
+    ePIProcPrgmActionLast                       /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPIProcPrgmAction;
+
+/*! Specifies the possible conveyor direction configurations */ 
+typedef enum
+{ 
+    ePIConveyorDirectionLtoR,                   /*!< Left to right. */
+    ePIConveyorDirectionRtoL,                   /*!< Right to left. */
+    ePIConveyorDirectionRtoR,                   /*!< Right to right.  Boards enter and exit on the same side of the machine. */
+    ePIConveyorDirectionLtoL,                   /*!< Left to left.  Boards enter and exit on the same side of the machine. */
+    ePIConveyorDirectionLast                    /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPIConveyorDirection;
+
+/*! Indicates the type of print head. */ 
+typedef enum
+{ 
+    ePIPumpBladeTypePump,                       /*!< Rheometric pump */
+    ePIPumpBladeTypeBlade,                      /*!< Squeegee blades */
+    ePIPumpBladeTypeLast                        /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPIPumpBladeType;
+
+/*! Indicates the system conveyor state. */ 
+typedef enum
+{ 
+    ePIConvSysStateBlocked,	                    /*!< ready to transfer downstream and downstream is busy */
+    ePIConvSysStateNotBlocked,	                /*!< transferring board to downstream */
+    ePIConvSysStateStarved,	                    /*!< ready to accept board from upstream and upstream is not ready to transfer. */
+    ePIConvSysStateNotStarved,	                /*!< transferring board from upstream or processing board (only on processing segments). */
+    ePIConvSysStateLast                         /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPIConvSysState;
+
+/*! Identifies the type of inspection performed on the device */ 
+typedef enum
+{ 
+    ePI2dBrdDtypeCtrstCvg,                      /*!< Contrast based pad coverage */
+    ePI2dBrdDtypeTxturCvg,                      /*!< Texture based pad coverage */
+    ePI2dBrdDtypePasteXfr,                      /*!< Paste transfer */
+    ePI2dBrdDtypeBridgGap,                      /*!< Bridge coverage within the gap */
+    ePI2dBrdDtypeBrdgSpan,                      /*!< Bridge span within the gap */
+    ePI2dBrdDtypeLast                           /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */             
+} EPI2dBrdDtype;
+
+/*! Identifies the min, max and average values for each inspection item of a device */ 
+typedef enum
+{ 
+    ePI2dDtypeMin,                              /*!< 2D Inspection minimum value for a device */
+    ePI2dDtypeMax,                              /*!< 2D Inspection maximum value for a device */
+    ePI2dDtypeAvg,                              /*!< 2D Inspection average value for a device */
+    ePI2dDtypeLast                              /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */                
+} EPI2dDtype;
+
+/*! Identifies the type of inspection performed on the stencil */ 
+typedef enum
+{ 
+    ePI2dStlDtypeBlockage,                      /*!< Percent blockage of a stencil aperture */
+    ePI2dStlDtypeBridgGap,                      /*!< Bridge coverage within the gap between stencil apertures */
+    ePI2dStlDtypeBrdgSpan,                      /*!< Bridge span within the gap between stencil apertures */
+    ePI2dStlDtypeLast                           /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */              
+} EPI2dStlDtype;
+
+/*! Indicates whether or not processing was successful */ 
+typedef enum
+{ 
+    ePIProcessedStatusAOK,                      /*!< Indicates the board was processed successfully */
+    ePIProcessedStatusError,                    /*!< Indicates a failure during processing */
+    ePIProcessedStatusLast                      /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPIProcessedStatus;
+
+/*! Indicates the type of a published value */ 
+typedef enum
+{ 
+    ePIPublishedValueTypeDouble,                /*!< Indicates a double precision floating point value */
+    ePIPublishedValueTypeBool,                  /*!< Indicates a boolean value */
+    ePIPublishedValueTypeInt,                   /*!< Indicates an integer value */
+    ePIPublishedValueTypeString,                /*!< Indicates a string value */
+    ePIPublishedValueTypeLast                   /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPIPublishedValueType;
+
+/*! Indicates the units of a published value */ 
+typedef enum
+{ 
+    ePIPublishedValueUnitsDistanceMm,           /*!< Indicates a distance value in millimeters */
+    ePIPublishedValueUnitsSpeedMmPerSec,        /*!< Indicates a speed value in mm/sec */
+    ePIPublishedValueUnitsAccelMmPerSecPerSec,  /*!< Indicates an acceleration value in mm/sec/sec */
+    ePIPublishedValueUnitsForceKg,              /*!< Indicates a force value in Kilograms */
+    ePIPublishedValueUnitsPressureBar,          /*!< Indicates a pressure value in Bar */
+    ePIPublishedValueUnitsAreaMmXMm,            /*!< Indicates an aread value in mm^2 */
+    ePIPublishedValueUnitsTempDegC,             /*!< Indicates a temperature value in degrees celsius. */
+    ePIPublishedValueUnitsOther,                /*!< Indicates used with non-units values such as strings */
+    ePIPublishedValueUnitsLast                  /*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPIPublishedValueUnits;
+
+/*! Indicates the wiper paper feed mode */ 
+typedef enum
+{ 
+    ePIWipePaperFeedModeUndefined = -1,				/*!< Not defined */
+    ePIWipePaperFeedModeIndex,					/*!< Paper is indexed at the start of the wipe */
+    ePIWipePaperFeedModeContinuous,				/*!< Paper is moving throughout the wipe */
+	ePIWipePaperFeedModeLast					/*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPIWipePaperFeedMode;
+
+/*! Indicates the wiper stroke type used */
+typedef enum
+{ 
+    ePIWipeStrokeTypeUndefined = -1,					/*!< Not defined */
+    ePIWipeStrokeTypeDryR2F,					/*!< Dry stroke moves from rear to front */
+    ePIWipeStrokeTypeDryF2R,					/*!< Dry stroke moves from front to rear */
+    ePIWipeStrokeTypeSolventR2F,				/*!< Solvent stroke moves from rear to front */
+    ePIWipeStrokeTypeSolventF2R,				/*!< Solvent stroke moves from front to rear */
+    ePIWipeStrokeTypeVacuumR2F,					/*!< Vacuum stroke moves from rear to front */
+    ePIWipeStrokeTypeVacuumF2R,					/*!< Vacuum stroke moves from front to rear */
+	ePIWipeStrokeTypeVacuumSolventF2R,			/*!< Vacuum solvent stroke moves from front to rear */
+	ePIWipeStrokeTypeLast						/*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPIWipeStrokeType;
+
+/*! Indicates the wipe event type */
+typedef enum
+{ 
+    PIWipeEventTypeUndefined = -1,					/*!< Not defined */
+    PIWipeEventTypeBoard,						/*!< Event triggered upon a set number of boards */
+    PIWipeEventTypeInspFail,					/*!< Event triggered upon inspection failure */
+    PIWipeEventTypeIdle,						/*!< Event triggered upon being idle for set time */
+    PIWipeEventTypeDispense,					/*!< Event triggered upon a set number of dispenses */
+    PIWipeEventTypeUserDef,						/*!< Event triggered by user for a manual wipe. */
+    PIWipeEventTypeStencilInspFail,				/*!< Event triggered upon stencil inspection failure */
+	PIWipeEventTypeAuerBoatComplete,			/*!< Event triggered upon printing all the PCB's in the Auer Boat */
+	PIWipeEventTypeManualCleanTimer,			/*!< Event triggered on a manual clean stencil timer */
+	PIWipeEventTypeCleanAndRemoveTimer,			/*!< Event triggered on a clean and remove stencil timer */
+	PIWipeEventTypeWipeNowManualClean,			/*!< Event triggered on a wipe now manual clean event */
+	PIWipeEventTypeWipeNowManualRemove,			/*!< Event triggered on a wipe now manual remove event */
+	PIWipeEventTypeWipeTest,					/*!< Event triggered when a user is editing a wipe */
+	PIWipeEventTypeLast							/*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPIWipeEventType;
+
+
+/*! Indicates the snapoff move type */
+typedef enum
+{ 
+    PISnapoffMoveTypeUnknown,					/*!< Not defined */
+    PISnapoffMoveTypeContinuous,				/*!< Indicates that the snapoff is in continuous move mode */
+    PISnapoffMoveTypeStepDown,					/*!< Indicates that the snapoff is in step down move mode */
+	PISnapoffMoveTypeLast						/*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPISnapoffMoveType;
+
+
+/*! Indicates the source of the barcode (introduced in schema6) */
+typedef enum
+{ 
+    PIBarcodeSourceUndefined,					/*!< Not defined */
+    PIBarcodeSourceUpstreamScanner,				/*!< Barcode source is upstream scanner */
+    PIBarcodeSourceInputSegScanner,				/*!< Barcode source is scanner at input segment */
+    PIBarcodeSourceExternalClient,				/*!< Barcode source is external client (e.g. OpenApp) */
+	PIBarcodeSourceCamera,						/*!< Barcode source is camera in printer */
+	PIBarcodeSourceLast							/*!< Always the last value in the list.  Its value indicates the total number of enumerations. */
+} EPIBarcodeSource;

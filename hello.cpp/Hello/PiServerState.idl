@@ -1,0 +1,134 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  $Workfile:$
+//
+//  Description:.
+//        Defines the Benchmark side of the Benchmark/Plug-in *Machine State* interface
+//
+//    $Author:$
+//  $Revision:$
+//      $Date:$
+//
+//  Copyright 2011 Speedline Technologies, Inc.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+import "PiDefine.idl";
+
+/*!
+    The RPC interface to the Speedline Benchmark Printer for machine state functions. 
+*/
+[
+    uuid(82f2c890-4f25-4216-9c3a-a44be182ddab),
+    version(1.0)
+]
+interface PISerStateInterface
+{
+    /*!
+    \b Schema1 Returns the current state of the machine.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param peSysMachineState (See definition of \ref EPISysMachineState)
+    \param peCallStatus Indicates whether the call was accepted or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext
+    */
+    void RpcBMGetState
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [out] EPISysMachineState *peSysMachineState,
+        [out] EPICallStatus * peCallStatus
+    );
+
+    /*!
+    \b Schema1 Triggers a wipe. This will have the same effect as pressing the wipe now button on the production screen. If the system is not in production it no action shall be taken.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param peCallStatus Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext, ePICallStatNotAuthorized, ePICallStatIncorrectState
+    */
+    void RpcBMTriggerWipe
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [out] EPICallStatus * peCallStatus
+    );
+
+    /*!
+    \b Schema1 Triggers a manual inspection. This will have the same effect as pressing the manual inspect button on the production screen. If the system is not in production, no action shall be taken.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param peCallStatus Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext, ePICallStatNotAuthorized, ePICallStatIncorrectState
+    */
+    void RpcBMTriggerManualInspection
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [out] EPICallStatus * peCallStatus
+    );
+
+    /*!
+    \b Schema1 Triggers a manual clean. This will have the same effect as pressing the manual clean button on the production screen. If the system is not in production, no action shall be taken.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param peCallStatus Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext, ePICallStatNotAuthorized, ePICallStatIncorrectState
+    */
+    void RpcBMTriggerManualCleanStencil
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [out] EPICallStatus * peCallStatus
+    );
+
+    /*!
+    \b Schema1 – Triggers an automatic add paste. This will have the same effect as pressing the automatic add paste button on the production screen. If the system is not in production, or does not have a paste dispenser, no action shall be taken.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param peCallStatus – Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext, ePICallStatNotAuthorized, , ePICallStatIncorrectState, ePICallStatIncorrectHardware
+    */
+    void RpcBMTriggerAutoAddPaste
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [out] EPICallStatus * peCallStatus
+    );
+
+    /*!
+    \b Schema1 Triggers a manual add paste. This will have the same effect as pressing the manual add paste button on the production screen. If the system is not in production, it shall be ignored.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param peCallStatus Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext, ePICallStatNotAuthorized, ePICallStatIncorrectState
+    */
+    void RpcBMTriggerManualAddPaste
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [out] EPICallStatus * peCallStatus
+    );
+
+    /*!
+    \b Schema1 – Pauses production. This will have the same effect as pressing the pause button on the production screen. If the system is not in production, no action shall be taken.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param peCallStatus – Indicates whether the call was accepted or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext, ePICallStatNotAuthorized, ePICallStatIncorrectState
+    */
+    void RpcBMPauseProduction
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [out] EPICallStatus * peCallStatus
+    );
+
+    /*!
+    \b Schema1 Stops production. This will have the same effect as pressing the stop button on the production screen (without prompting to finish processing unfinished boards). If the system is not in production, no action shall be taken.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param bProcessAllBoards – Set to true to process all unprocessed boards prior to stopping (i.e. board staged on input segment).
+    \param peCallStatus Indicates whether the call was accepted or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext, ePICallStatNotAuthorized, ePICallStatIncorrectState
+    */
+    void RpcBMStopProduction
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] boolean bProcessAllBoards,
+        [out] EPICallStatus * peCallStatus
+    );
+}

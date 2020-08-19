@@ -1,0 +1,213 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  $Workfile:$
+//
+//  Description:.
+//        Defines the Plug-in side of the Benchmark Plug-in *State* interface
+//
+//    $Author:$
+//  $Revision:$
+//      $Date:$
+//
+//  Copyright 2011 Speedline Technologies, Inc.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+import "PiDefine.idl";
+
+/*!
+    An RPC interface to allow Benchmark to notify a Plug-in of machine state related events.
+    If a Plug-in wishes to receive system state notifications from Benchmark it must 
+    implement this interface and set ePINotifyTypeState in 
+    PICliConnectIF::RpcPIGetNotificationList.
+*/
+[
+uuid(bd2bc8ba-4b62-4e88-ac29-0210595ecdfb),
+version(1.0)
+]
+interface PICliStateInterface
+{
+    /*!
+    \b Schema1 Indicates that the state of the machine has changed.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param eNewState (See definition of \ref EPISysMachineState)
+    */
+    void RpcPIMachineStateChange
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] EPISysMachineState eNewState
+    );
+
+    /*!
+    \b Schema1 Indicates that a wipe has started
+    */
+    void RpcPIWipeStarted
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                               /*!< The context handle for the plug-in. */
+        [in] hyper i64Timestamp,                                        /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in] short sProfileNameLen,                                     /*!< Number of characters in usProfileName */
+        [in, size_is(sProfileNameLen)] unsigned short usProfileName[*]  /*!< NUL terminated Unicode string containing the name of the wipe profile. */
+    );
+
+    /*!
+    \b Schema1 Indicates that the wipe has completed.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    */
+    void RpcPIWipeComplete
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp
+    );
+
+    /*!
+    \b Schema1 Indicates that the user is manually cleaning the stencil.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    */
+    void RpcPIManualStencilCleanStarted
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp
+    );
+
+    /*!
+    \b Schema1 Indicates that the user has completed manually cleaning the stencil.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    */
+    void RpcPIManualStencilCleanComplete
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp
+    );
+
+    /*!
+    \b Schema1 Indicates that the system has started a dispense using the paste dispenser option.
+    */
+    void RpcPIDispenseStarted
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                                   /*!< The context handle for the plug-in. */
+        [in] hyper i64Timestamp,                                            /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in] short sProfileNameLen,                                         /*!< Number of characters in usProfileName. */
+        [in, size_is(sProfileNameLen)] unsigned short usProfileName[*]      /*!< NUL terminated Unicode string containing the name of the dispense profile. */
+    );
+
+    /*!
+    \b Schema1 Indicates that the dispense has completed.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    */
+    void RpcPIDispenseComplete
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp
+    );
+
+    /*!
+    \b Schema1 Indicates that the user has selected the Add Paste wizard.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    */
+    void RpcPIManualAddPasteStarted
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp
+    );
+
+    /*!
+    \b Schema1 Indicates that the Add Paste wizard has completed.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    */
+    void RpcPIManualAddPasteComplete
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp
+    );
+
+    /*!
+    \b Schema1 Indicates that the user has selected the Change Paste wizard.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    */
+    void RpcPIChangePasteStarted
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp
+    );
+
+    /*!
+    \b Schema1 Indicates that the user has completed the Change Paste wizard.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    */
+    void RpcPIChangePasteComplete
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp
+    );
+
+    /*!
+    \b Schema1 Indicates that the user has removed the stencil (could be part of stencil change).
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    */
+    void RpcPIStencilRemoved
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp
+    );
+
+    /*!
+    \b Schema1 Indicates that the user has inserted the stencil (could be part of stencil change).
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    */
+    void RpcPIStencilInserted
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp
+    );
+
+    /*!
+    \b Schema1 Indicates that the print stroke has started
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param bIsFrontToRear True if the stroke direction is front to rear
+    \param sStrokeNumber Indicates the number of the stroke for this board. Starts at 1. Useful when more than one stroke/board is being done.
+    */
+    void RpcPIPrintStrokeStarted
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] boolean bIsFrontToRear,
+        [in] short sStrokeNumber
+    );
+
+    /*!
+    \b Schema1 Indicates that the print stroke has ended
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    */
+    void RpcPIPrintStrokeEnded
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp
+    );
+
+    /*!
+    \b Schema1 Indicates that a knead operation is being performed on the current board
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param lBoardId Board identifier
+    */
+    void RpcPIKneadNotification
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] long lBoardId
+    );
+}

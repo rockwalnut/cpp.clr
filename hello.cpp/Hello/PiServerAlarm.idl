@@ -1,0 +1,52 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  $Workfile:$
+//
+//  Description:.
+//        Defines the Benchmark side of the Benchmark Plug-in *Alarm* interface
+//
+//    $Author:$
+//  $Revision:$
+//      $Date:$
+//
+//  Copyright 2011 Speedline Technologies, Inc.
+//
+///////////////////////////////////////////////////////////////////////////////
+import "PiDefine.idl";
+
+/*!
+    The RPC interface to the Speedline Benchmark Printer for alarm functions. 
+*/
+[
+    uuid(1f2680dd-7ac1-4b03-bd41-5ab1f907771b),
+    version(1.0)
+]
+interface PISerAlarmInterface
+{
+    /*!
+    \b Schema1 Called by the plug-in to create an alarm.
+    */
+    void RpcBMPostAlarm
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                                   /*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,                                            /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in] EPIAlarmSeverity eAlarmSeverity,                               /*!< See definition of \ref EPIAlarmSeverity */
+        [in] short sAlarmMessageLen,                                        /*!< Number of characters in usAlarmMessage. */
+        [in, size_is(sAlarmMessageLen)] unsigned short usAlarmMessage[*],   /*!< NUL terminated Unicode string containing the alarm text. This will not be translated */
+		[in] hyper i64UserData,												/*!< A 64 bit value that may be set by the calling plugin. */
+        [out] long *plAlarmId,                                              /*!< The alarm identifier. */
+        [out] EPICallStatus * peCallStatus                                  /*!< Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.   
+                                                                            Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext, ePICallStatNotAuthorized. */
+    );
+
+    /*!
+    \b Schema1 Returns the current alarm system state of the machine.
+    */
+    void RpcBMGetAlarmSysState
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                   /*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,                            /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [out] EPIAlarmSysState *peAlarmSysState,            /*!< The overall alarm state of the system (see definition of \ref EPIAlarmSysState). */
+        [out] EPICallStatus * peCallStatus                  /*!< Indicates whether the call was accepted or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext */
+    );
+}

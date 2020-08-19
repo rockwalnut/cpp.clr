@@ -1,0 +1,46 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  $Workfile:$
+//
+//  Description:.
+//        Defines the Plug-in side of the Benchmark Plug-in *Environmental* interface
+//
+//    $Author:$
+//  $Revision:$
+//      $Date:$
+//
+//  Copyright 2011 Speedline Technologies, Inc.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+import "PiDefine.idl";
+
+/*!
+    An RPC interface to allow Benchmark to notify a Plug-in of environment related events. 
+    If a Plug-in wishes to receive environmental notifications from Benchmark it must 
+    implement this interface and set ePINotifyTypeEnvironmental in 
+    PICliConnectIF::RpcPIGetNotificationList.
+*/
+[
+uuid(0a2a21b0-c244-4d82-901e-f784327b473e),
+version(1.0)
+]
+interface PICliEnviromentInterface
+{
+    /*!
+    \b Schema1 posts the environmental information to the plug-in.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param lBoardId Board identifier
+    \param fTempC Temperature in degrees Celsius
+    \param fRelHumidity Percent relative humidity
+    */
+    void RpcPIPostECUData
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] long lBoardId,
+        [in] float fTempC,
+        [in] float fRelHumidity
+    );
+}

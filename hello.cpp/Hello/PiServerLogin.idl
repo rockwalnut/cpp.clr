@@ -1,0 +1,43 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  $Workfile:$
+//
+//  Description:.
+//        Defines the Benchmark side of the Benchmark/Plug-in *Login* interface
+//
+//    $Author:$
+//  $Revision:$
+//      $Date:$
+//
+//  Copyright 2011 Speedline Technologies, Inc.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+import "PiDefine.idl";
+
+/*!
+    The RPC interface to the Speedline Benchmark Printer for login functions. 
+*/
+[
+    uuid(8648c2b0-6d6a-47dd-8c57-3306d5c70cab),
+    version(1.0)
+]
+interface PISerLoginInterface
+{
+    /*!
+    \b Schema1 Returns the name of the logged in operator. If an operator is not currently logged in, returns an empty string.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param psOperatorNameLen Number of characters in the operator name string (excluding NUL). Set to zero if no operator is logged in.
+    \param usOperatorName NUL terminated Unicode string containing the name of the operator.
+    \param peCallStatus Indicates whether the call was accepted or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext
+    */
+    void RpcBMGetOperator
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in, out] short* psOperatorNameLen,
+        [out, size_is(*psOperatorNameLen)] unsigned short usOperatorName[*],
+        [out] EPICallStatus * peCallStatus
+    );
+}

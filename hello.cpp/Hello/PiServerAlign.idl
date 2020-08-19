@@ -1,0 +1,50 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  $Workfile:$
+//
+//  Description:.
+//        Defines the Benchmark side of the Benchmark/Plug-in *Alignment* interface
+//
+//    $Author:$
+//  $Revision:$
+//      $Date:$
+//
+//  Copyright 2011 Speedline Technologies, Inc.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+import "PiDefine.idl";
+
+
+/*!
+    The RPC interface to the Speedline Benchmark Printer for alignment functions. 
+*/
+[
+    uuid(7ff81f3d-3f99-49c1-aaba-693645f27926),
+    version(1.0)
+]
+interface PISerAlignInterface
+{
+    /*!
+    \b Schema1 Sets the X, Y and Theta error for the specified board. Used to close the loop from the downstream inspection device. 
+    */
+    void RpcBMSetBoardXYTData
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                           /*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,                                    /*!< Time stamp of when the board was analyzed. */
+        [in] long lBoardId,                                         /*!< Board identifier. */
+        [in] short sBarcodeLen,                                     /*!< Number of characters in usBarcode. */
+        [in, size_is(sBarcodeLen)] unsigned short usBarcode[*],     /*!< The barcode associated with the board. */
+        [in] EPIProcessedStatus eProcessedStatus,                   /*!< Plug-ins should use this flag to indicate whether any processing they performed was successful. */
+        [in] double dXCorrectionMm,                                 /*!< The correction to apply in the X direction. */
+        [in] double dYCorrectionMm,                                 /*!< The correction to apply in the Y direction. */
+        [in] double dThetaCorrectionDeg,                            /*!< The rotational correction to apply. */
+        [in] double dXCenterRotationMm,                             /*!< X position of the center of rotation for the correction in Benchmark board space */
+        [in] double dYCenterRotation,                               /*!< Y position of the center of rotation for the correction in Benchmark board space */
+        [in] long lPackagedDataLength,                              /*!< The number of bytes in packagedData. */
+        [in, size_is(lPackagedDataLength)] byte packagedData[*],    /*!< This is an exact copy of data passed in RpcPIBoardPrinted.  It is used internally by Benchmark. */
+        [out] EPICallStatus * peCallStatus                          /*!< Indicates whether the call succeeded or not. See definition 
+                                                                    of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, 
+                                                                    ePICallStatInvalidContext, ePICallStatNotAuthorized,ePICallStatInvalidParameter */
+    );
+}

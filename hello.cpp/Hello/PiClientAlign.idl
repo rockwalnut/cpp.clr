@@ -1,0 +1,168 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  $Workfile:$
+//
+//  Description:.
+//        Defines the Plug-in side of the Benchmark Plug-in *Alignment* interface
+//
+//    $Author:$
+//  $Revision:$
+//      $Date:$
+//
+//  Copyright 2011 Speedline Technologies, Inc.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+import "PiDefine.idl";
+
+/*!
+    An RPC interface to allow Benchmark to notify a Plug-in of alignment related events. 
+    If a Plug-in wishes to receive alignment notifications from Benchmark it must implement this interface and set ePINotifyTypeAlignment in PICliConnectIF::RpcPIGetNotificationList.
+*/
+[
+uuid(5a97b60b-9972-4e6e-8180-4fc9c0864cb8),
+version(1.0)
+]
+interface PICliAlignInterface
+{
+    /*!
+    \b Schema1 Posts the alignment data to the plug-in.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param lBoardId Board identifier
+    \param dCorrXmm X correction needed to align board to stencil
+    \param dCorrYmm Y correction needed to align board to stencil
+    \param dCorrTdeg Theta correction needed to align board to stencil
+    \param sNumAlignFids Number of fids data is being reported for. Note that the system may be configured such that the stencil fids are not always searched (and therefore not always reported).
+    \param bIsBoardFid True if board fid, false if stencil fid
+    \param usAlignFidName Fid name
+    \param dAlignFidScore Search score result for fid
+    \param dAlignFidTaughtPosXmm Taught position of the fid in board space mm, X dimension
+    \param dAlignFidTaughtPosYmm Taught position of the fid in board space mm, Y dimension
+    \param sNumStretchFids The number of strech fiducials contained in usStretchBoardFidName, usStretchStencilFidName, dStretchFidTaughtPosXmm, dStretchFidTaughtPosYmm
+    \param usStretchBoardFidName The names of all of the stretch board fiducials
+    \param usStretchStencilFidName The names of all of the stretch stencil fiducials
+    \param dStretchFidTaughtPosXmm X positions in board space mm of all of the stretch fiducials
+    \param dStretchFidTaughtPosYmm Y positions in board space mm of all of the stretch fiducials
+    \param dStretchXmm Distance between board and stencil fid in X mm
+    \param dStretchYmm Distance between board and stencil fid in Y mm
+    */
+    void RpcPIPostAlignData
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] long lBoardId,
+        [in] double dCorrXmm,
+        [in] double dCorrYmm,
+        [in] double dCorrTdeg,
+        [in] short sNumAlignFids,
+        [in,size_is(sNumAlignFids)] boolean bIsBoardFid[*],
+        [in,size_is(sNumAlignFids)] unsigned short usAlignFidName[*][BENCHMARK_PII_MAX_OBJ_NAME_LEN],
+        [in,size_is(sNumAlignFids)] double dAlignFidScore[*],
+        [in,size_is(sNumAlignFids)] double dAlignFidTaughtPosXmm[*],
+        [in,size_is(sNumAlignFids)] double dAlignFidTaughtPosYmm[*],
+        [in] short sNumStretchFids,
+        [in,size_is(sNumStretchFids)] unsigned short usStretchBoardFidName[*][BENCHMARK_PII_MAX_OBJ_NAME_LEN],
+        [in,size_is(sNumStretchFids)] unsigned short usStretchStencilFidName[*][BENCHMARK_PII_MAX_OBJ_NAME_LEN],
+        [in,size_is(sNumStretchFids)] double dStretchFidTaughtPosXmm[*],
+        [in,size_is(sNumStretchFids)] double dStretchFidTaughtPosYmm[*],
+        [in,size_is(sNumStretchFids)] double dStretchXmm[*],
+        [in,size_is(sNumStretchFids)] double dStretchYmm[*]
+    );
+
+    /*!
+    \b Schema1 Posts the registration verification data to the plug-in
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param lBoardId Board identifier
+    \param sNumFids Number of fids being reported
+    \param dFidTaughtPosXmm in board space
+    \param dFidTaughtPosYmm in board space
+    \param dRegistrationErrorXmm
+    \param dRegistrationErrorYmm
+    \param usBoardFidName
+    \param dBoardFidScore search score for fiducial
+    \param dBoardFidLocatedPosX
+    \param dBoardFidLocatedPosY
+    \param usStencilFidName
+    \param dStencilFidScore search score for fiducial
+    \param dStencilFidLocatedPosX
+    \param dStencilFidLocatedPosY
+    */
+    void RpcPIPostRegistrationVerificationData
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] long lBoardId,
+        [in] short sNumFids,
+        [in,size_is(sNumFids)] double dFidTaughtPosXmm[*],
+        [in,size_is(sNumFids)] double dFidTaughtPosYmm[*],
+        [in,size_is(sNumFids)] double dRegistrationErrorXmm[*],
+        [in,size_is(sNumFids)] double dRegistrationErrorYmm[*],
+        [in,size_is(sNumFids)] unsigned short usBoardFidName[*][BENCHMARK_PII_MAX_OBJ_NAME_LEN],
+        [in,size_is(sNumFids)] double dBoardFidScore[*],
+        [in,size_is(sNumFids)] double dBoardFidLocatedPosX[*],
+        [in,size_is(sNumFids)] double dBoardFidLocatedPosY[*],
+        [in,size_is(sNumFids)] unsigned short usStencilFidName[*][BENCHMARK_PII_MAX_OBJ_NAME_LEN],
+        [in,size_is(sNumFids)] double dStencilFidScore[*],
+        [in,size_is(sNumFids)] double dStencilFidLocatedPosX[*],
+        [in,size_is(sNumFids)] double dStencilFidLocatedPosY[*]
+    );
+
+    /*!
+    \b Schema2 Indicates that am print offset correction has been received by the SPI interface or the Open App interface(OAI)
+    Note that correction information is only applied to furture strokes of the same direction as the print stroke for the
+    board specified by lBoardId.
+    */
+    void RpcPICorrectionReceived
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                                   /*!< The context handle for the plug-in. */
+        [in] hyper i64Timestamp,                                            /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in] short sCorrectorNameLen,                                       /*!< Number of characters in usCorrectorName */
+        [in, size_is(sCorrectorNameLen)] unsigned short usCorrectorName[*], /*!< NUL terminated Unicode string containing the name of the interface making the correction. */
+        [in] long lBoardId,                                                 /*!< The id of the board upon which the correction is based*/
+        [in] boolean bValidData,                                            /*!< Flag indicating whether or not correction data is valid and will be used by the printer. */
+        [in] boolean bFrontToRear,                                          /*!< Flag indicating whether or not correction data pertains to a front-to-rear printer board or rear-to=front. */
+        [in] double dXCorrectionMm,                                         /*!< The correction to apply in the X direction. */
+        [in] double dYCorrectionMm,                                         /*!< The correction to apply in the Y direction. */
+        [in] double dThetaCorrectionDeg,                                    /*!< The rotational correction to apply. */
+        [in] double dXCenterRotationMm,                                     /*!< X position of the center of rotation for the correction in Benchmark board space */
+        [in] double dYCenterRotationMm                                      /*!< Y position of the center of rotation for the correction in Benchmark board space */
+    );
+
+
+
+    /*!
+    \b Schema6 Posts the board and stencil fid found data
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param lBoardId Board identifier
+    \param sNumBoardFids Number of board (i.e. panel) fids being reported
+    \param arrBoardFidTaughtPosXmm Array of taught x positions (1 per board fid) in board space
+    \param arrBoardFidTaughtPosYmm Array of taught y positions (1 per board fid) in board space
+    \param arrBoardFidFoundOffsetXmm Array of x offsets to found fid (1 per board fid) in board space
+    \param arrBoarddFidFoundOffsetYmm Array of x offsets to found fid (1 per board fid) in board space
+    \param sNumStencilFids Number of stencil (i.e. mask) fids being reported
+    \param arrStencilFidTaughtPosXmm Array of taught x positions (1 per stencil fid) in board space
+    \param arrStencilFidTaughtPosYmm Array of taught y positions (1 per stencil fid) in board space
+    \param arrStencilFidFoundOffsetXmm Array of x offsets to found fid (1 per stencil fid) in board space
+    \param arrStencilFidFoundOffsetYmm Array of x offsets to found fid (1 per stencil fid) in board space
+    */
+    void RpcPIPostFidFoundData
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] long lBoardId,
+        [in] short sNumBoardFids,
+        [in,size_is(sNumBoardFids)] double arrBoardFidTaughtPosXmm[*],
+        [in,size_is(sNumBoardFids)] double arrBoardFidTaughtPosYmm[*],
+        [in,size_is(sNumBoardFids)] double arrBoardFidFoundOffsetXmm[*],
+        [in,size_is(sNumBoardFids)] double arrBoardFidFoundOffsetYmm[*],
+        [in] short sNumStencilFids,
+        [in,size_is(sNumStencilFids)] double arrStencilFidTaughtPosXmm[*],
+        [in,size_is(sNumStencilFids)] double arrStencilFidTaughtPosYmm[*],
+        [in,size_is(sNumStencilFids)] double arrStencilFidFoundOffsetXmm[*],
+        [in,size_is(sNumStencilFids)] double arrStencilFidFoundOffsetYmm[*]
+    );
+
+}

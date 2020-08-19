@@ -1,0 +1,26 @@
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	// A unique identifier that distinguishes this
+	// interface from other interfaces.
+	uuid(00000001-EAF3-4A7A-A0F2-BCE4C30DA77E),
+
+	// This is version 1.0 of this interface.
+	version(1.0),
+
+	// This interface will use an implicit binding
+	// handle named hExample1Binding.
+	implicit_handle(handle_t hHelloBinding)
+	//explicit_handle //unneccessary for declare
+]
+
+interface Hello // The interface is named 
+{
+	// A function that takes a zero-terminated string.
+	void output(
+		//[in, string] const char* szOutput);
+
+		//[in] handle_t hBinding,
+		[in, string] const char* szOutput);
+}

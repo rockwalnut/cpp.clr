@@ -1,0 +1,74 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  $Workfile:$
+//
+//  Description:.
+//        Defines the Benchmark side of the Benchmark/Plug-in *Traceability* interface
+//
+//    $Author:$
+//  $Revision:$
+//      $Date:$
+//
+//  Copyright 2011 Speedline Technologies, Inc.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+import "PiDefine.idl";
+
+/*!
+    The RPC interface to the Speedline Benchmark Printer for traceability functions.
+*/
+[
+    uuid(ff4ae995-6aec-4a08-a30e-00356a331f8a),
+    version(1.0)
+]
+interface PISerTraceInterface
+{
+    /*!
+    \b Schema1 Allows the plug-in to set barcodes for various items within the machine. Any barcodes 
+    which are not being reported should have their length set to 0.
+    */
+    void RpcBMSetSystemBarcodes
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                                           /*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,                                                    /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in] short sStencilBarcodeLen,                                              /*!< Number of character in usStencilBarcode */
+        [in, size_is(sStencilBarcodeLen)] unsigned short usStencilBarcode[*],       /*!< Unicode string of the barcode to apply to the current stencil. */
+        [in] short sPasteBarcodeLen,                                                /*!< Number of character in usPasteBarcode */
+        [in, size_is(sPasteBarcodeLen)] unsigned short usPasteBarcode[*],           /*!< Unicode string of the barcode to apply to the current paste. */
+        [in] short sFrontBladeBarcodeLen,                                           /*!< Number of character in usFrontBladeBarcode */
+        [in, size_is(sFrontBladeBarcodeLen)] unsigned short usFrontBladeBarcode[*], /*!< Unicode string of the barcode to apply to the current front blade. */
+        [in] short sRearBladeBarcodeLen,                                            /*!< Number of character in usRearBladeBarcode */
+        [in, size_is(sRearBladeBarcodeLen)] unsigned short usRearBladeBarcode[*],   /*!< Unicode string of the barcode to apply to the current rear blade. */
+        [in] short sPumpBarcodeLen,                                                 /*!< Number of character in usPumpBarcode */
+        [in, size_is(sPumpBarcodeLen)] unsigned short usPumpBarcode[*],             /*!< Unicode string of the barcode to apply to the current pump. */
+        [in] short sWorkholderBarcodeLen,                                           /*!< Number of character in usWorkholderBarcode */
+        [in, size_is(sWorkholderBarcodeLen)] unsigned short usWorkholderBarcode[*], /*!< Unicode string of the barcode to apply to the current work holder. */
+        [out] EPICallStatus * peCallStatus                                          /*!< Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.  
+                                                                                    Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext */
+    );
+
+    /*!
+    \b Schema1 Allows the plug-in to set barcodes for various items within the machine. Any barcodes 
+    which are not being reported should have their length set to 0.
+    */
+    void RpcBMGetSystemBarcodes
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                                               /*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,                                                        /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in, out] short* psStencilBarcodeLen,                                           /*!< Number of character in usStencilBarcode */
+        [out, size_is(*psStencilBarcodeLen)] unsigned short usStencilBarcode[*],        /*!< Unicode string of the barcode to apply to the current stencil. */
+        [in, out] short* psPasteBarcodeLen,                                             /*!< Number of character in usPasteBarcode */
+        [out, size_is(*psPasteBarcodeLen)] unsigned short usPasteBarcode[*],            /*!< Unicode string of the barcode to apply to the current paste. */
+        [in, out] short* psFrontBladeBarcodeLen,                                        /*!< Number of character in usFrontBladeBarcode */
+        [out, size_is(*psFrontBladeBarcodeLen)] unsigned short usFrontBladeBarcode[*],  /*!< Unicode string of the barcode to apply to the current front blade. */
+        [in, out] short* psRearBladeBarcodeLen,                                         /*!< Number of character in usRearBladeBarcode */
+        [out, size_is(*psRearBladeBarcodeLen)] unsigned short usRearBladeBarcode[*],    /*!< Unicode string of the barcode to apply to the current rear blade. */
+        [in, out] short* psPumpBarcodeLen,                                              /*!< Number of character in usPumpBarcode */
+        [out, size_is(*psPumpBarcodeLen)] unsigned short usPumpBarcode[*],              /*!< Unicode string of the barcode to apply to the current pump. */
+        [in, out] short* psWorkholderBarcodeLen,                                        /*!< Number of character in usWorkholderBarcode */
+        [out, size_is(*psWorkholderBarcodeLen)] unsigned short usWorkholderBarcode[*],  /*!< Unicode string of the barcode to apply to the current work holder. */
+        [out] EPICallStatus * peCallStatus                                              /*!< Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.  
+                                                                                            Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext */
+    );
+}

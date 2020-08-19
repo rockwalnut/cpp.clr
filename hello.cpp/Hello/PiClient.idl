@@ -1,0 +1,89 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  $Workfile:$
+//
+//  Description:.
+//        Defines the Plug-in side of the Benchmark/Plug-in *Connection* interface
+//
+//    $Author:$
+//  $Revision:$
+//      $Date:$
+//
+//  Copyright 2011 Speedline Technologies, Inc.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+import "PiDefine.idl";
+
+/*!
+    The RPC interface to a Benchmark Plug-in for managing Connections.
+    All Plug-ins must implement this interface in order to successfully connect to Benchmark.
+*/
+[
+    uuid(2dce1642-f02e-4486-b2dc-e7b15e97f6a0),
+    version(1.0)
+]
+interface PICliConnectInterface
+{
+    /*!
+    \b Schema1 Terminates a connection between Benchmark and the Plug-in. This shall be called by Benchmark on the plug-in when Benchmark is disconnecting from the Plug-in
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    */
+    void RpcPIDisconnect
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp
+    );
+
+    /*!
+    \b Schema1 Called to test that the connection to the Plug-in is working.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    */
+    void RpcPIPing
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp
+    );
+
+    /*!
+    \b Schema1 Returns the software version of the Plug-in as a Unicode string.
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param sNameLen On input it is the maximum buffer size, on output it is the number of characters in the name (excluding NUL).
+    \param usName Nul terminated Unicode name of the plug-in. If name is longer the input sNameLen, it shall be truncated to sNameLen-1 characters and shall be NUL terminated.
+    \param sSoftwareVersionLen On input it is the maximum buffer size, on output it is the number of characters in the software version string (excluding NUL).
+    \param usSoftwareVersion Nul terminated Unicode string containing the software version of the plug-in. If the string is longer than input sSoftwareVersionLen, it shall be truncated to sSoftwareVersionLen -1 characters and shall be NUL terminated.
+    \param lSchema The interface schema number.
+    */
+    void RpcPIGetVersionInfo
+    (
+        [in] handle_t hdl,
+        [in] hyper i64Timestamp,
+        [in, out] short* sNameLen,
+        [out, size_is(*sNameLen)] unsigned short usName[*], 
+        [in, out] short* sSoftwareVersionLen,
+        [out, size_is(*sSoftwareVersionLen)] unsigned short usSoftwareVersion [*],
+        [out] long * lSchema
+    );
+
+    /*!
+    \b Schema1 Returns the list of events that the plug-in wants to be notified about
+    \param phContext The context handle for the plug-in.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param sListLen On input it is the maximum list size, on output it is the actual number of elements in the list.
+    \param eNotifyList List of notifications the plug-in is interested in. Valid entries are: EPINotifyTypeConfiguration, EPINotifyTypeLogin, EPINotifyTypeOperatorValidation, EPINotifyTypeAlarm, EPINotifyTypeState, EPINotifyTypeConveyor, EPINotifyTypeBoard, EPINotifyTypeProcessProgram, EPINotifyTypeAlignment, EPINotifyTypeInspection, EPINotifyTypeEnvironmental, EPINotifyTypeTraceability
+    \param pphContext A pointer to a context handle which is to be used in future calls into the plugin.  The plugin uses this context to determine which instance of Benchmark is making the call. This will not be modified in any way by Benchmark. 
+    */
+    void RpcPIGetNotificationList
+    (
+        [in] handle_t hdl,
+        [in] hyper i64Timestamp,
+        [in, out] short* sListLen,
+        [out, size_is(*sListLen) ] EPINotifyType eNotifyList[*],
+        [out] PCONTEXT_HDL_TYPE* pphContext
+    );
+}
+
+

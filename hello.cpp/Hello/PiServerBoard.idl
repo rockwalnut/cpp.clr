@@ -1,0 +1,164 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  $Workfile:$
+//
+//  Description:.
+//        Defines the Benchmark side of the Benchmark/Plug-in *Board* interface
+//
+//    $Author:$
+//  $Revision:$
+//      $Date:$
+//
+//  Copyright 2011 Speedline Technologies, Inc.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+import "PiDefine.idl";
+
+/*!
+    The RPC interface to the Speedline Benchmark Printer for general board functions.
+*/
+[
+    uuid(40c4a056-885d-433a-b1fd-04dd86481d52),
+    version(1.0)
+]
+interface PISerBoardInterface
+{
+    /*!
+    \b Schema1 Retrieves the board id that will be assigned to the next board that enters the system.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param plBoardId A pointer to receive the next board identifier.
+    \param peCallStatus Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext, ePICallStatNotAuthorized, ePICallStatInvalidParameter
+    */
+    void RpcBMGetNextBoardId
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [out] long* plBoardId,
+        [out] EPICallStatus * peCallStatus
+    );
+
+    /*!
+    \b Schema1 Sets the barcode for the specified board.
+    */
+    void RpcBMSetBoardBarcode
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                           /*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,                                    /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in] long lBoardId,                                         /*!< The board identifier. */
+        [in] short sBarcodeLen,                                     /*!< Number of characters in usBarcode. */
+        [in, size_is(sBarcodeLen)] unsigned short usBarcode[*],     /*!< The barcode string. */
+        [out] EPICallStatus * peCallStatus                          /*!< Indicates whether the call succeeded or not. See definition
+                                                                    of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, 
+                                                                    ePICallStatInvalidContext, ePICallStatNotAuthorized, ePICallStatInvalidParameter */
+    );
+
+    /*!
+    \b Schema1 Returns the barcode for the specified board.
+    */
+    void RpcBMGetBoardBarcode
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                           /*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,                                    /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in] long lBoardId,                                         /*!< The board identifier. */
+        [in, out] short* psBarcodeLen,                              /*!< The number of characters in barcode string, excluding NUL. */
+        [out, size_is(*psBarcodeLen)] unsigned short usBarcode[*],  /*!< The barcode string. */
+        [out] EPICallStatus * peCallStatus                          /*!< Indicates whether the call succeeded or not. See definition
+                                                                    of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, 
+                                                                    ePICallStatInvalidContext, ePICallStatInvalidParameter */
+    );
+
+    /*!
+    \b Schema1 Sets the panel data for the specified board.
+    */
+    void RpcBMSetPanelData 
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                                                           /*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,                                                                    /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in] long lBoardId,                                                                         /*!< The board identifier. */
+        [in] short sNumPanels,                                                                      /*!< Number of panels on board. */
+        [in,size_is(sNumPanels)] short sPanelIdList[*],                                             /*!< Array of panel ids. */
+        [in,size_is(sNumPanels)] unsigned short usBarcodeList[*][BENCHMARK_PII_MAX_BARCODE_LEN],    /*!< Array of panel barcodes arranged in the same order as sPanelIdList. */
+        [out] EPICallStatus * peCallStatus                                                          /*!< Indicates whether the call succeeded or not.  See definition of 
+                                                                                                    \ref EPICallStatus. Valid values for this call are: ePICallStatAOK, 
+                                                                                                    ePICallStatInvalidContext, ePICallStatNotAuthorized, ePICallStatInvalidParameter*/
+    );
+
+    /*!
+     \b Schema1 Returns the panel data for the specified board.
+    */
+    void RpcBMGetPanelData
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                                                           /*!< The context handle which was returned from the RpcBMConnect() call. */ 
+        [in] hyper i64Timestamp,                                                                    /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in] long lBoardId,                                                                         /*!< The board identifier. */
+        [in, out] short*sNumPanels,                                                                 /*!< The number of panels on board. */
+        [out,size_is(*sNumPanels)] short sPanelIdList[],                                            /*!< Array of panel ids. */
+        [out,size_is(*sNumPanels)] unsigned short usBarcodeList[*][BENCHMARK_PII_MAX_BARCODE_LEN],  /*!< Array of panel barcodes arranged in the same order as sPanelIdList. */
+        [out] EPICallStatus * peCallStatus                                                          /*!< Indicates whether the call succeeded or not. See definition
+                                                                                                    of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, 
+                                                                                                    ePICallStatInvalidContext, ePICallStatInvalidParameter */
+    );
+
+    /*!
+    \b Schema1 Sets the batch limit for the current run.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param lBatchLimit Batch limit
+    \param peCallStatus Indicates whether the call succeeded or not.  See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext, ePICallStatNotAuthorized, ePICallStatInvalidParameter
+    */
+    void RpcBMSetBatchLimit
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] long lBatchLimit,
+        [out] EPICallStatus * peCallStatus
+    );
+
+    /*!
+    \b Schema1 Gets the current batch count for the current run.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param plBatchCount Batch count
+    \param peCallStatus Indicates whether the call succeeded or not.  See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext, ePICallStatNotAuthorized, ePICallStatInvalidParameter
+    */
+    void RpcBMGetBatchCount
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [out] long* plBatchCount,
+        [out] EPICallStatus * peCallStatus
+    );
+
+    /*!
+    \b Schema1 Sets the current batch count for the current run.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param lBatchCount Batch count
+    \param peCallStatus Indicates whether the call succeeded or not.  See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext, ePICallStatNotAuthorized, ePICallStatInvalidParameter
+    */
+    void RpcBMSetBatchCount
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] long lBatchCount,
+        [out] EPICallStatus * peCallStatus
+    );
+
+    /*!
+    \b Schema1 Tells the printer that the board should not be processed by Benchmark but instead by another downstream machine.  
+    This function should be used when two or more machines are operating in tandem.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param lBoardId The board identifier.
+    \param peCallStatus Indicates whether the call succeeded or not.  See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext, ePICallStatNotAuthorized, ePICallStatInvalidParameter
+    */
+    void RpcBMSetIgnoreBoard
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in] long lBoardId,                 
+        [out] EPICallStatus * peCallStatus
+    );
+}

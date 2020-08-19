@@ -1,0 +1,39 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  $Workfile:$
+//
+//  Description:.
+//        Defines the Benchmark side of the Benchmark Plug-in *Message* interface
+//
+//    $Author:$
+//  $Revision:$
+//      $Date:$
+//
+//  Copyright 2013 Speedline Technologies, Inc.
+//
+///////////////////////////////////////////////////////////////////////////////
+import "PiDefine.idl";
+
+/*!
+    The RPC interface to the Speedline Benchmark Dispenser for Message functions. 
+*/
+[
+    uuid(8369646e-70c6-4da0-931d-64e18cf327fa),
+    version(1.0)
+]
+interface PISerMessageInterface
+{
+    /*!
+    \b Schema1 Called by the plug-in to send a message to Benchmark.
+    */
+    void RpcBMPostMessage
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                           /*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,                                    /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in] short sMessageLen,                                     /*!< Number of characters in usAlarmMessage. */
+        [in, size_is(sMessageLen)] unsigned short usMessage[*],		/*!< NUL terminated Unicode string containing the alarm text. This will not be translated */
+        [out] EPICallStatus * peCallStatus                          /*!< Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.   
+                                                                         Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext, ePICallStatNotAuthorized. */
+    );
+
+}

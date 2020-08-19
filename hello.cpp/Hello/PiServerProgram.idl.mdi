@@ -1,0 +1,175 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  $Workfile:$
+//
+//  Description:.
+//        Defines the Benchmark side of the Benchmark/Plug-in *Process Program* interface
+//
+//    $Author:$
+//  $Revision:$
+//      $Date:$
+//
+//  Copyright 2011 Speedline Technologies, Inc.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+import "PiDefine.idl";
+
+/*!
+    The RPC interface to the Speedline Benchmark Printer for process program functions. 
+*/
+[
+    uuid(d978d27d-d768-44c9-9a7a-6b2ece3b0e24),
+    version(1.0)
+]
+interface PISerProgramInterface
+{
+    /*!
+    \b Schema1 Returns the name of the currently loaded process program
+    */
+    void RpcBMGetLoadedProcProgramName
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                           /*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,                                    /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in, out] short* sPPNameLen,                                /*!< Number of characters in process program name string, excluding NUL. */
+        [out, size_is(*sPPNameLen)] unsigned short usPPName[*],     /*!< The process program name. */
+        [out] EPICallStatus * peCallStatus                          /*!< Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK or ePICallStatInvalidContext. */
+    );
+
+    /*!
+    \b Schema1 Serializes the requested process program to a temporary XML file on the local machine, 
+    and returns the name of this temporary file.
+    */
+    void RpcBMGetProcProgram
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                           /*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,                                    /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in] short sPPNameLen,                                      /*!< Number of characters in usPPName. */
+        [in, size_is(sPPNameLen)] unsigned short usPPName[*],       /*!< The process program name. */
+        [in, out] short* sXMLNameLen,                               /*!< Number of characters in process program XML file name excluding NUL. */
+        [out,size_is(*sXMLNameLen)] unsigned short usXMLName[*],    /*!< Name of a temporary XML file representation of the process program. */
+        [out] EPICallStatus * peCallStatus                          /*!< Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext or ePICallStatProcessProgramNotFound */
+    );
+
+    /*!
+    \b Schema1 Loads the specified process program. The state of the machine must be either ePISysMSNotReady
+    or ePISysMSReady. The process program is loaded without performing any change-over (i.e. no resizing of rails, etc.).
+    */
+    void RpcBMLoadProcProgram
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                       /*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,                                /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in] short sPPNameLen,                                  /*!< Number of characters in usPPName. */
+        [in, size_is(sPPNameLen)] unsigned short usPPName[*],   /*!< The process program name. */
+        [out] EPICallStatus * peCallStatus                      /*!< Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.
+                                                                Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext, 
+                                                                ePICallStatNotAuthorized, ePICallStatProcessProgramNotFound, ePICallStatIncorrectState */
+    );
+
+
+    /*!
+    \b Schema2 Retrieves the current assembly part number.
+    */
+    void RpcPIGetAssemblyPartNumber
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                                           /*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,                                                    /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in, out] short* sAssemblyPartNumLen,                                       /*!< Number of characters in usAssemblyPartNum string, excluding NUL. */
+        [out, size_is(*sAssemblyPartNumLen)] unsigned short usAssemblyPartNum[*],   /*!< The current assembly part number. */
+        [out] EPICallStatus * peCallStatus                                          /*!< Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK or ePICallStatInvalidContext. */
+    );
+
+    /*!
+    \b Schema2 Retrieve the current work order number.
+    */
+    void RpcPIGetWorkOrderNumber
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,                                           /*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,                                                    /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+        [in, out] short* sWorkOrderNumLen,                                          /*!< Number of characters in usWorkOrderNum string, excluding NUL. */
+        [out, size_is(*sWorkOrderNumLen)] unsigned short usWorkOrderNum[*],         /*!< The current work order number. */
+        [out] EPICallStatus * peCallStatus                                          /*!< Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK or ePICallStatInvalidContext. */
+    );
+
+    /*!
+    \b Schema5 Retrieve current values related to separation distance & speed (each def'd by a base + offset)
+    */
+	void RpcPIGetBoardSeparationValues
+	(
+		[in] PCONTEXT_HDL_TYPE phContext,			/*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,                    /*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+		[out] double* pdDistBaseMm,					/*!< Base separation distance */
+		[out] double* pdDistOffsetMm,				/*!< Active separation distance offset */
+		[out] double* pdSpeedBaseMmSec,				/*!< Base separation speed */
+		[out] double* pdSpeedOffsetMmSec,			/*!< Active separation speed offset */
+        [out] EPICallStatus * peCallStatus			/*!< Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.
+                                                         Valid values for this call are: 
+																ePICallStatAOK						Success
+																ePICallStatInvalidContext			Bad context value passed from OpenApp
+																ePICallStatProcessProgramNotFound	Program not loaded							*/
+	);
+
+    /*!
+    \b Schema5 Set the active board separation offset values (user must explicitly apply these to PP if desired)
+    */
+	void RpcPISetBoardSeparationOffsets
+	(
+		[in] PCONTEXT_HDL_TYPE phContext,			/*!< The context handle which was returned from the RpcBMConnect() call. */
+        [in] hyper i64Timestamp,					/*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+		[in] double dDistOffsetMm,					/*!< New value for active separation distance offset */
+		[in] double dSpeedOffsetMmSec,				/*!< New value for active separation speed offset  */
+        [out] EPICallStatus * peCallStatus			/*!< Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.
+                                                         Valid values for this call are: 
+																ePICallStatAOK						Success
+																ePICallStatInvalidContext			Bad context value passed from OpenApp
+																ePICallStatProcessProgramNotFound	Program not loaded
+																ePICallStatNotAuthorized			Separation offsets disabled
+																ePICallStatInvalidParameter			One or more parameters out-of-range		*/
+	);
+
+
+    /*!
+    \b Schema5 Retrieve current values related to squeegee force & speed (each def'd by a base + offset)
+    */
+	void RpcPIGetSqueegeeValues
+	(
+		[in] PCONTEXT_HDL_TYPE phContext,			/*!< The context handle which was returned from the RpcBMConnect() call. */
+		[in] hyper i64Timestamp,					/*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+		[out] boolean* bSeparateStrokesEnabled,		/*!< Indicates if system configured to use separate speed/force values for front-to-rear and rear-to-front strokes*/
+		[out] double* pdForceBaseKg,				/*!< Base force for the F2R stroke (or both strokes if bSeparateStrokesEnabled is false) */
+		[out] double* pdForceOffsetKg,				/*!< Active force offset for the F2R stroke (or both strokes if bSeparateStrokesEnabled is false) */
+		[out] double* pdSpeedBaseMmSec,				/*!< Base speed for the F2R stroke (or both strokes if bSeparateStrokesEnabled is false) */
+		[out] double* pdSpeedOffsetMmSec,			/*!< Active speed offset for the F2R stroke (or both strokes if bSeparateStrokesEnabled is false) */
+		[out] double* pdR2FForceBaseKg,				/*!< Base force for the R2F stroke (meaningful only if bSeparateStrokesEnabled is true) */
+		[out] double* pdR2FForceOffsetKg,			/*!< Active force offset for the R2F stroke (meaningful only if bSeparateStrokesEnabled is true) */
+		[out] double* pdR2FSpeedBaseMmSec,			/*!< Base speed for the R2F stroke (meaningful only if bSeparateStrokesEnabled is true) */
+		[out] double* pdR2FSpeedOffsetMmSec,		/*!< Active speed offset for the R2F stroke (meaningful only if bSeparateStrokesEnabled is true) */
+        [out] EPICallStatus * peCallStatus			/*!< Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.
+                                                         Valid values for this call are: 
+																ePICallStatAOK						Success
+																ePICallStatInvalidContext			Bad context value passed from OpenApp
+																ePICallStatProcessProgramNotFound	Program not loaded						*/
+	);
+
+    /*!
+    \b Schema5 Set the active squeegee offset values (user must explicitly apply these to PP if desired)
+    */
+	void RpcPISetSqueegeeOffsets
+	(
+		[in] PCONTEXT_HDL_TYPE phContext,			/*!< The context handle which was returned from the RpcBMConnect() call. */ 
+		[in] hyper i64Timestamp, 					/*!< Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)). */
+		[in] boolean bRearToFront,					/*!< Flag to explicitly set rear-to-front offsets (can only be set to true IF configured for separate speed/force per stroke direction) */
+		[in] double dForceOffsetKg,					/*!< New value for active force offset */
+		[in] double dSpeedOffsetMmSec,				/*!< New value for active speed offset */
+        [out] EPICallStatus * peCallStatus			/*!< Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.
+                                                         Valid values for this call are: 
+																ePICallStatAOK						Success
+																ePICallStatInvalidContext			Bad context value passed from OpenApp
+																ePICallStatProcessProgramNotFound	Program not loaded
+																ePICallStatNotAuthorized			Squeegee offsets not enabled
+																ePICallStatIncorrectState			Attempt to set R2F offsets when using common values
+																ePICallStatInvalidParameter			One or more parameters out-of-range
+																*/
+	);
+
+}

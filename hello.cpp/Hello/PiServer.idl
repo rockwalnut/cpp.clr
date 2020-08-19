@@ -1,0 +1,213 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  $Workfile:$
+//
+//  Description:.
+//        Defines the Benchmark side of the Benchmark Open App *Connection* Interface
+//
+//    $Author:$
+//  $Revision:$
+//      $Date:$
+//
+//  Copyright 2011 Speedline Technologies, Inc.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+import "PiDefine.idl";
+
+/*! \page page1 Revision History
+  \section sec1d0 Revision 1.0
+  Date:   14Dec2011<br>
+  Author: JEF<br>
+  Notes:  Initiial revision.
+  \section sec1d1 Revision 1.1
+  Date:   06Mar2012<br>   
+  Author: JEF<br>
+  Notes:  Addition of alarm user data.
+  \section sec1d02 Revision 1.2
+  Date:   07May2012<br>
+  Author: JEF<br>
+  Notes:  Added use of context handle for plugin/open app side communications.
+  \section sec1d3 Revision 1.3
+  Date:   16Jul2012<br>
+  Author: JEF<br>
+  Notes:  Minor tweaks regarding licensing.
+  \section sec1d4 Revision 1.4
+  Date:   17Oct2012<br>
+  Author: JEF<br>
+  Notes:  Addition of GUID to RpcBMConnect call.
+  \section sec1d4 Revision 1.5
+  Date:   30May2013<br>
+  Author: JEF<br>
+  Notes:  Added upstream and downstream SMEMA ready support.
+*/
+
+/*! \page Guide
+
+\section secintro Introduction
+This document describes the Speedline Open App Interface.  
+This interface allows third-party OEMs to write custom software packages called open apps (formerly plug-ins) which can communicate with Benchmark for 
+Printers.  These open apps can request data from Benchmark, make decisions, and command Benchmark to perform an
+action (i.e. pause production, perform a wipe, etc.).  This document is intended to be used as a reference for
+open app developers.
+
+\section secsafety Safety
+The open app interface provides no methods that can cause a stopped or paused machine to run.  
+The Benchmark software also provides a means to temporarily disable open app access to the machine.
+
+\section seclic Licensing
+Open apps are licensed per machine by Speedline using the existing option licensing scheme.  
+Each developed open app is given a GUID by Speedline that is embedded in the open app executable and presented to Benchmark during connection.  
+Each Speedline printer will need an option key linked to the GUID and open app name in order to allow communications with the the open app.  
+Open app GUIDs and machine specific option keys can be obtained by contacting Speedline Technical Support.   
+
+In addition, Benchmark will only accept one connection at a time using a particular GUID per network address.  
+So for example, the open app MyOpenApp using GUID A may connect to Benchmark from 192.168.2.2 only once.  
+However, another instance of MyOpenApp may connect to the same Benchmark machine using GUID A as long as it 
+is connecting from a different network address.
+
+In terms of third party controls and libraries used by the open app developer, it is the responsibility of
+the open app developer to adhere to legal software practices and pay necessary royalties.
+    
+The Benchmark Help About screen lists the licensed open apps in its Configuration view. 
+
+\section secbehavior Behavior
+\subsection subsecinstall Installation 
+It is up to the open app developer to provide a software package with installation. If the open app is 
+to run on the same computer as Benchmark, it shall be developed to run on 32-bit Windows XP.  
+It is also the responsibility of the open app to start itself. This can be using a Windows method 
+(i.e. in the startup folder, or a service configured for automatic startup), or the user could start it.
+Once started, the open app will check for Benchmark's endpoint, waiting if it does not yet exist. 
+Once it exists, it will connect to Benchmark.
+
+\subsection subsecconfig Configuration 
+Open apps shall provide the ability to configure their own RPC endpoint port. Multiple configurations
+of open apps may be running on any given machine and the open app developer should not assume that a 
+fixed port shall be available.
+Open apps shall provide the ability to configure the Benchmark endpoint. This shall consist of a workstation
+name and endpoint port.
+
+\subsection subsecoaresponse Open App Responsiveness 
+It is important that the open app developer develop their open app in such a way as to not over-burden 
+Benchmark with requests. For example the open app should not poll Benchmark in a loop waiting for a 
+state change, but should wait for a state change notification from Benchmark.
+
+\section secrpc RPC
+RPC (Remote Procedure Calls) are used as the underlying communications mechanism.  
+Interface shall conform to DCE 1.1 RPC as specified by the Open Group (available from www.OpenGroup.org).  
+Since a return for each message is provided by RPC message "acknowledgements" are built-in.  The 
+interface methods are grouped logically and then subdivided into methods that an open app will call into Benchmark 
+(server methods) and methods that Benchmark will call into an open app (client methods).  Giving both 
+the open app an interface into Benchmark and Benchmark an interface into the open app allows both to 
+communicate with each other without polling.
+
+Each group of interface methods is defined as a separate RPC interface in its own .idl file.  Open apps may choose to implement any subset of the client interfaces as deemed appropriate.
+
+The open app interface has a schema.  The documentation of each method in the interface identifies the
+schema in which it was added. All later versions of the interface must support the earlier versions.
+For example: a schema 3 interface contains all the functionality of schema 1 and schema 2 versions 
+of the interface.
+
+\section secMinImpReq Minimum Implementation Requirements
+All open apps must implement the PICliConnectInterface and PISerConnectInterface interfaces.  
+Implementation of all other interfaces are optional and dependent on the open app's requirements.  
+In addition, it is expected that all open apps will query Benchmark for its schema and indicate 
+the schema it supports utilizing these interfaces.  Open apps should only request from the Benchmark 
+server interface methods which are included in the interface schema it supports.  Benchmark 
+will only request from the open app interface methods which are included in the interface schema 
+supported by the open app.
+*/
+
+/*!
+    The RPC interface to the Benchmark printer for managing Connections.
+*/
+[
+    uuid(55da2909-0843-4e35-a2d4-2903629c3c98),
+    version(1.0)
+]
+interface PISerConnectInterface
+{
+    /*!
+    \b Schema1 Establishes the connection between a Plug-in (client) and Benchmark (server). Validates the legitimacy of the Plug-in,
+    and gives Benchmark the information it needs to establish its connection back to the Plugin.
+    */
+    void RpcBMConnect
+    ( 
+        [in] handle_t hdl,                                                      /*!< Binding handle to the interface. */
+        [in] short sStringBindingLen,                                           /*!< Number of characters in usStringBinding. */
+        [in, size_is(sStringBindingLen)] unsigned short usStringBinding[*],     /*!< A string representing the binding handle 
+                                                                                of the endpoint on the plug-in. This will be used by Benchmark to connect
+                                                                                back into the plug-in. */
+        [in, size_is(BENCHMARK_PII_GUID_LEN)] unsigned short usGUID[*],         /*!< The GUID given to the plug-in developer by Speedline. 
+                                                                                This GUID shall be used to determine if this open app is licensed on this machine. */
+        [in] short sNameLen,                                                    /*!< Number of characters in usName. */
+        [in, size_is(sNameLen)] unsigned short usName[*],                       /*!< Nul terminated Unicode name of the plug-in. If name is longer 
+                                                                                the input sNameLen, it shall be truncated to sNameLen-1 characters and shall be NUL terminated. */
+        [out] PCONTEXT_HDL_TYPE* pphContext,                                    /*!< A pointer to a context handle which is to be used in future calls into Benchmark. 
+                                                                                Benchmark uses this context to determine which plug-in is making the call. This 
+                                                                                should not be modified in any way by the plug-in. */
+        [out] EPICallStatus* peCallStatus                                       /*!< Indicates whether the call succeeded or not. See definition 
+                                                                                of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, 
+                                                                                ePICallStatNotLicensed, ePICallStatAlreadyConnected */
+    );
+
+    /*!
+     \b Schema1 Terminates a connection between a Plug-in and Benchmark. After receiving this call, Benchmark will call Disconnect from the Plug-in.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+     \param peCallStatus Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext
+    */
+    void RpcBMDisconnect
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [out] EPICallStatus * peCallStatus    
+    );
+
+    /*!
+    \b Schema1 Called to test that the connection to Benchmark is working.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+     \param peCallStatus Indicates whether the call succeeded or not. See definition of \ref EPICallStatus.  Valid values for this call are: ePICallStatAOK, ePICallStatInvalidContext
+    */
+    void RpcBMPing
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [out] EPICallStatus * peCallStatus    
+    );
+
+    /*!
+    \b Schema1 Returns the software version of Benchmark as a Unicode string, and the interface schema.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param sSoftwareVersionLen On input it is the maximum buffer size, on output it is the number of characters in the software version string (excluding NUL).
+    \param usSoftwareVersion Nul terminated Unicode string containing the software version of Benchmark. If the string is longer than input sSoftwareVersionLen, it shall be truncated to sSoftwareVersionLen -1 characters and shall be NUL terminated.
+    \param lSchema The Schema version of the interface.
+    */
+    void RpcBMGetVersionInfo
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in, out] long * sSoftwareVersionLen,
+        [out, size_is(*sSoftwareVersionLen)] unsigned short usSoftwareVersion [*],
+        [out] long * lSchema
+    );
+
+    /*!
+    // \b Schema1 Returns the machine identifier as a Unicode string. The machine identifier is the machine serial number. Also returns the machine type.
+    \param phContext The context handle which was returned from the RpcBMConnect() call.
+    \param i64Timestamp Time stamp of when the call was made (The number of seconds elapsed since midnight (00:00:00), January 1, 1970, coordinated universal time (UTC)).
+    \param sMachineIdLen On input it is the maximum buffer size, on output it is the number of characters in the name (excluding NUL).
+    \param usMachineId Null terminated Unicode string containing the machine identifier. If the string is longer than input sMachineIdLen, it shall be truncated to sMachineIdLen -1 characters and shall be NUL terminated.
+    \param eMachineType The machine type see definition of \ref EPIMachineType.
+    */
+    void RpcBMGetMachineInfo
+    (
+        [in] PCONTEXT_HDL_TYPE phContext,
+        [in] hyper i64Timestamp,
+        [in, out] short* sMachineIdLen,              
+        [out, size_is(*sMachineIdLen)] unsigned short usMachineId [*],
+        [out] EPIMachineType * eMachineType
+    );
+}
